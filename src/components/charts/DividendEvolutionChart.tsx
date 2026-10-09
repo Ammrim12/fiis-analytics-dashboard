@@ -85,17 +85,17 @@ export const DividendEvolutionChart: React.FC<DividendEvolutionChartProps> = ({
       </div>
 
       {/* Gráfico */}
-      <div className="h-[280px] w-full pt-4">
+      <div className="h-[240px] sm:h-[280px] w-full pt-4">
         <ResponsiveContainer width="100%" height="100%">
           <ComposedChart
             data={data}
-            margin={{ top: 10, right: 10, left: -15, bottom: 0 }}
+            margin={{ top: 10, right: 10, left: -20, bottom: 0 }}
           >
             <CartesianGrid strokeDasharray="3 3" stroke="#1F2937" vertical={false} />
             <XAxis
               dataKey="mesFormatado"
               stroke="#64748B"
-              fontSize={11}
+              fontSize={10}
               tickLine={false}
               axisLine={{ stroke: '#1F2937' }}
             />

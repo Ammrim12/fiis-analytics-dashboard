@@ -6,7 +6,9 @@ import {
   ExternalLink, 
   Search, 
   Building,
-  CheckCircle2
+  CheckCircle2,
+  LayoutGrid,
+  Table as TableIcon
 } from 'lucide-react';
 import { FiiRecord } from '../types/fii';
 import { 
@@ -51,6 +53,7 @@ export const FiiTable: React.FC<FiiTableProps> = ({
   const [sortField, setSortField] = useState<SortField>('valorTotal');
   const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('desc');
   const [tableSearch, setTableSearch] = useState('');
+  const [displayMode, setDisplayMode] = useState<'table' | 'cards'>('table');
 
   // Agrupa por ticker se houver mais de um registro por ticker (ex: consolidado anual)
   const uniqueRecords = useMemo(() => {
@@ -151,22 +154,161 @@ export const FiiTable: React.FC<FiiTableProps> = ({
           </div>
         </div>
 
-        {/* Input de Busca Rápida na Tabela */}
-        <div className="relative min-w-[200px]">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-slate-400" />
-          <input
-            type="text"
-            placeholder="Filtrar tabela..."
-            value={tableSearch}
-            onChange={(e) => setTableSearch(e.target.value)}
-            className="w-full bg-[#162032] border border-slate-700/80 text-slate-100 placeholder-slate-400 text-xs rounded-lg pl-8 pr-3 py-1.5 focus:ring-1 focus:ring-emerald-500 focus:border-emerald-500 transition-colors"
-          />
+        {/* Controles à Direita: Busca e Alternador de Visão */}
+        <div className="flex items-center gap-2">
+          {/* Input de Busca Rápida na Tabela */}
+          <div className="relative min-w-[180px] sm:min-w-[200px] flex-1">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-slate-400" />
+            <input
+              type="text"
+              placeholder="Filtrar tabela..."
+              value={tableSearch}
+              onChange={(e) => setTableSearch(e.target.value)}
+              className="w-full bg-[#162032] border border-slate-700/80 text-slate-100 placeholder-slate-400 text-xs rounded-lg pl-8 pr-3 py-1.5 focus:ring-1 focus:ring-emerald-500 focus:border-emerald-500 transition-colors"
+            />
+          </div>
+
+          {/* Alternador Tabela vs Cards */}
+          <div className="flex items-center bg-[#162032] p-0.5 rounded-lg border border-slate-700/80 flex-shrink-0">
+            <button
+              onClick={() => setDisplayMode('table')}
+              className={`p-1.5 rounded-md transition-colors ${
+                displayMode === 'table' ? 'bg-emerald-500 text-slate-950 shadow-sm' : 'text-slate-400 hover:text-white'
+              }`}
+              title="Visualização em Tabela"
+            >
+              <TableIcon className="h-3.5 w-3.5" />
+            </button>
+            <button
+              onClick={() => setDisplayMode('cards')}
+              className={`p-1.5 rounded-md transition-colors ${
+                displayMode === 'cards' ? 'bg-emerald-500 text-slate-950 shadow-sm' : 'text-slate-400 hover:text-white'
+              }`}
+              title="Visualização em Cards"
+            >
+              <LayoutGrid className="h-3.5 w-3.5" />
+            </button>
+          </div>
         </div>
       </div>
 
-      {/* Tabela com Scroll Horizontal e Altura Otimizada */}
-      <div className="overflow-x-auto">
-        <table className="w-full text-left text-xs text-slate-200">
+      {/* Visualização em Cards (Mobile First & Responsivo) */}
+      {displayMode === 'cards' ? (
+        <div className="p-3 sm:p-4 grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-3">
+          {sortedRecords.length === 0 ? (
+            <div className="col-span-full py-8 text-center text-slate-500 text-sm">
+              Nenhum fundo encontrado com os filtros selecionados.
+            </div>
+          ) : (
+            sortedRecords.map((row) => {
+              const pvpBadge = getPvpBadge(row.pvp);
+              const segColor = getSegmentColor(row.segmento);
+              const pesoCarteira = totalPatrimonio > 0 ? (row.valorTotal / totalPatrimonio) * 100 : 0;
+              const progressWidth = maxPeso > 0 ? (pesoCarteira / maxPeso) * 100 : 0;
+              const tickerPrices = priceSeriesMap[row.ticker] || [];
+
+              return (
+                <div
+                  key={row.ticker}
+                  onClick={() => onSelectTicker(row.ticker)}
+                  className="bg-[#162032]/70 hover:bg-[#162032] border border-slate-800 hover:border-slate-700 rounded-xl p-3.5 space-y-3 cursor-pointer transition-all shadow-sm group"
+                >
+                  {/* Header do Card */}
+                  <div className="flex items-start justify-between">
+                    <div>
+                      <div className="flex items-center space-x-2">
+                        <span className="font-mono font-bold text-sm text-white group-hover:text-emerald-400 transition-colors">
+                          {row.ticker}
+                        </span>
+                        <span
+                          className="text-[10px] px-2 py-0.5 rounded-full font-medium"
+                          style={{
+                            backgroundColor: `${segColor}15`,
+                            color: segColor,
+                            border: `1px solid ${segColor}35`,
+                          }}
+                        >
+                          {row.segmento}
+                        </span>
+                      </div>
+                      <span className="text-[11px] text-slate-400 truncate block mt-0.5 max-w-[200px]" title={row.nome}>
+                        {row.nome}
+                      </span>
+                    </div>
+
+                    <span className={`text-[9px] px-1.5 py-0.5 rounded border font-medium ${pvpBadge.bgClass} ${pvpBadge.textClass} ${pvpBadge.borderClass}`}>
+                      P/VP {row.pvp.toFixed(2)}
+                    </span>
+                  </div>
+
+                  {/* Métricas Principais: Preço, Cotas e Sparkline */}
+                  <div className="grid grid-cols-3 gap-2 py-2 border-y border-slate-800/60 items-center">
+                    <div>
+                      <span className="text-[10px] text-slate-400 block">Preço</span>
+                      <span className="font-mono font-bold text-xs text-white tabular-nums">
+                        {formatCurrency(row.precoAtual)}
+                      </span>
+                    </div>
+
+                    <div>
+                      <span className="text-[10px] text-slate-400 block">Cotas</span>
+                      <span className="font-mono text-xs text-slate-200 tabular-nums">
+                        {formatNumber(row.cotas)}
+                      </span>
+                    </div>
+
+                    <div className="flex flex-col items-end">
+                      <span className="text-[9px] text-slate-500 block">12M</span>
+                      <Sparkline
+                        data={tickerPrices}
+                        width={65}
+                        height={18}
+                        color="#10B981"
+                        fillOpacity={0.2}
+                        strokeWidth={1.5}
+                      />
+                    </div>
+                  </div>
+
+                  {/* Renda e % Carteira */}
+                  <div className="flex items-center justify-between text-xs">
+                    <div>
+                      <span className="text-[10px] text-slate-400 block">{isConsolidated ? 'Renda 2024' : 'Renda Mês'}</span>
+                      <span className="font-mono font-bold text-emerald-400 tabular-nums">
+                        {formatCurrency(row.rendaMensal)}
+                      </span>
+                    </div>
+
+                    <div className="text-right">
+                      <span className="text-[10px] text-teal-300 font-mono font-medium block">
+                        DY: {formatPercent(row.dyMensal)}
+                      </span>
+                      <span className="text-[10px] text-slate-400 font-mono">
+                        {formatPercent(pesoCarteira, 1)} da cart.
+                      </span>
+                    </div>
+                  </div>
+
+                  {/* Barra de Progresso de Peso */}
+                  <div className="w-full bg-slate-900 rounded-full h-1 overflow-hidden">
+                    <div
+                      className="h-full rounded-full bg-gradient-to-r from-emerald-500 to-sky-400"
+                      style={{ width: `${progressWidth}%` }}
+                    />
+                  </div>
+                </div>
+              );
+            })
+          )}
+        </div>
+      ) : (
+        /* Tabela Tradicional com Scroll Horizontal Suave */
+        <div className="overflow-x-auto">
+          <div className="sm:hidden px-4 py-1.5 bg-slate-900/60 border-b border-slate-800 text-[10px] text-slate-400 flex items-center justify-between">
+            <span>Dica: Deslize horizontalmente para ver todas as colunas</span>
+            <span className="text-emerald-400 font-bold">➔</span>
+          </div>
+          <table className="w-full text-left text-xs text-slate-200">
           <thead className="bg-[#0D131F] text-slate-400 uppercase text-[10px] tracking-wider font-semibold border-b border-slate-800">
             <tr>
               <th 
@@ -442,6 +584,7 @@ export const FiiTable: React.FC<FiiTableProps> = ({
           </tfoot>
         </table>
       </div>
+      )}
 
     </div>
   );

@@ -41,7 +41,7 @@ export const KpiCards: React.FC<KpiCardsProps> = ({ kpis, isConsolidated }) => {
   };
 
   return (
-    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3.5">
+    <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-2.5 sm:gap-3.5">
       
       {/* 1. Patrimônio Total Investido */}
       <div className="relative overflow-hidden bg-gradient-to-br from-[#111827] via-[#131D2E] to-[#162032] border border-slate-800/90 rounded-2xl p-4 hover:border-sky-500/40 transition-all duration-300 group shadow-card-premium flex flex-col justify-between">
@@ -216,7 +216,7 @@ export const KpiCards: React.FC<KpiCardsProps> = ({ kpis, isConsolidated }) => {
       </div>
 
       {/* 5. Composição e Quantidade de Cotas */}
-      <div className="relative overflow-hidden bg-gradient-to-br from-[#111827] via-[#131D2E] to-[#162032] border border-slate-800/90 rounded-2xl p-4 hover:border-purple-500/40 transition-all duration-300 group shadow-card-premium flex flex-col justify-between">
+      <div className="col-span-2 sm:col-span-1 relative overflow-hidden bg-gradient-to-br from-[#111827] via-[#131D2E] to-[#162032] border border-slate-800/90 rounded-2xl p-4 hover:border-purple-500/40 transition-all duration-300 group shadow-card-premium flex flex-col justify-between">
         <div>
           <div className="flex items-center justify-between">
             <span className="text-[11px] font-semibold text-slate-400 uppercase tracking-wider">

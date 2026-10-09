@@ -112,8 +112,8 @@ export const AssetDetailDrawer: React.FC<AssetDetailDrawerProps> = ({
       />
 
       {/* Slide-over Sheet à Direita */}
-      <div className="fixed inset-y-0 right-0 max-w-full flex pl-10">
-        <div className="w-screen max-w-xl bg-[#0D131F] border-l border-slate-800 shadow-2xl flex flex-col transform transition-transform ease-out duration-300 animate-in slide-in-from-right">
+      <div className="fixed inset-y-0 right-0 max-w-full flex pl-0 sm:pl-10">
+        <div className="w-full sm:w-screen max-w-xl bg-[#0D131F] border-l border-slate-800 shadow-2xl flex flex-col transform transition-transform ease-out duration-300 animate-in slide-in-from-right">
           
           {/* Header do Drawer */}
           <div className="p-4 sm:p-5 border-b border-slate-800 bg-[#0F172A]/90 backdrop-blur-md sticky top-0 z-20">

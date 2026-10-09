@@ -60,26 +60,28 @@ export const Navbar: React.FC<NavbarProps> = ({
           <div className="flex items-center bg-[#111827] p-1 rounded-xl border border-slate-800">
             <button
               onClick={() => setViewMode('overview')}
-              className={`flex items-center space-x-1.5 px-3 py-1 rounded-lg text-xs font-semibold transition-all ${
+              className={`flex items-center space-x-1 sm:space-x-1.5 px-2.5 sm:px-3 py-1 rounded-lg text-xs font-semibold transition-all ${
                 viewMode === 'overview'
                   ? 'bg-gradient-to-r from-emerald-600 to-teal-600 text-white shadow-sm'
                   : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/50'
               }`}
             >
-              <Layers className="h-3.5 w-3.5" />
-              <span>Dashboard Executivo</span>
+              <Layers className="h-3.5 w-3.5 flex-shrink-0" />
+              <span className="hidden sm:inline">Dashboard Executivo</span>
+              <span className="sm:hidden text-[11px]">Dashboard</span>
             </button>
 
             <button
               onClick={() => setViewMode('analytics')}
-              className={`flex items-center space-x-1.5 px-3 py-1 rounded-lg text-xs font-semibold transition-all ${
+              className={`flex items-center space-x-1 sm:space-x-1.5 px-2.5 sm:px-3 py-1 rounded-lg text-xs font-semibold transition-all ${
                 viewMode === 'analytics'
                   ? 'bg-gradient-to-r from-sky-600 to-blue-600 text-white shadow-sm'
                   : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/50'
               }`}
             >
-              <BarChart3 className="h-3.5 w-3.5" />
-              <span>Matriz Valuation</span>
+              <BarChart3 className="h-3.5 w-3.5 flex-shrink-0" />
+              <span className="hidden sm:inline">Matriz Valuation</span>
+              <span className="sm:hidden text-[11px]">Valuation</span>
             </button>
           </div>
 
